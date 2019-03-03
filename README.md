@@ -4,14 +4,24 @@
 
 Webpack config script for compiling user-added React JSX components in an [Enonic XP](https://enonic.com/developer-tour/web-application-platform) project. 
 
-This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup. You're encouraged to copy and expand the `webpack.config.js` from here, as a template for your own project. If you do, it's recommended you still [use a config file for React4XP as described below](constants-and-structure), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
+This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup for your own project. You're encouraged to copy and expand the `webpack.config.js` from here as a template. If you do, it's recommended you still [use a config file for React4XP as described below](#constants-and-structure), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
 
-## Constants and structure
-
-The expected constants are read from a JSON file. You must supply the full path and name to the constants JSON file by using [Webpack env parameters](https://webpack.js.org/guides/environment-variables/), for example:
+## Install {#install}
 
 ```bash
-webpack --config
+npm add --save-dev react4xp-build-components
+```
+
+## Constants and structure {#constants-and-structure}
+
+React4xp has several steps that are necessary to work smoothly. You can use it out-of-the-box bys stringing the helpers and libs together as-is, or you can fork/modify/override/etc each of the steps as you want - but they shouldn't be completely skipped (with one exception: [building your own externals chunk](https://www.npmjs.com/package/react4xp-runtime-externals) is optional).
+
+Binding these steps together is **a JSON file with a set of constants that sync together each step and what they're is doing**. Creating this file is easily done with the [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants) helper. See the react4xp-buildconstants documentation for the full structure it creates in the JSON file - this defines a React4xp project structure, and if you decide to make your own constants file manually, you'll still need to stick to that structure inside it (at least the upper-case attributes. The `recommended` attribute only contains suggestions used only one place. Use hardcoded values instead if you want, for example instead of `recommended.buildEntriesAndChunks.ENTRY_SETS` in `webpack.config.js` here.
+
+The JSON config file can be wherever you want. When running this webpack script, use the [Webpack env parameter](https://webpack.js.org/guides/environment-variables/) `REACT4XP_CONFIG_FILE` to tell the script where to find it. Full path and name are needed. For example, using this package directly after installing:
+
+```bash
+webpack --config node_modules/react4xp-build-components/webpack.config.js --env.REACT4XP_CONFIG_FILE=/me/myproject/build/react4xpConfig.json
 ```
 
 ### Input
