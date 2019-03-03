@@ -6,17 +6,30 @@ Webpack config script for compiling user-added React JSX components in an [Enoni
 
 This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup for your own project. You're encouraged to copy and expand the `webpack.config.js` from here as a template. If you do, it's recommended you still [use a config file for React4XP as described below](#constants-and-structure), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
 
-## Install {#install}
+
+  - [Install](#install)
+  - [Structure](#structure)
+    - [Constants](#constants)
+    - [Input](#input)
+      - [React components bound to XP components](#1-react-components-bound-to-XP-components)
+      - [Unbound components](#2-unbound-components)
+      - [Shared components](#3-shared-components)
+    - [Output](#output)
+
+
+## Install
 
 ```bash
 npm add --save-dev react4xp-build-components
 ```
 
-## Constants and structure {#constants-and-structure}
+## Structure
 
-React4xp has several steps that are necessary to work smoothly. You can use it out-of-the-box bys stringing the helpers and libs together as-is, or you can fork/modify/override/etc each of the steps as you want - but they shouldn't be completely skipped (with one exception: [building your own externals chunk](https://www.npmjs.com/package/react4xp-runtime-externals) is optional).
+### Constants
 
-Binding these steps together is **a JSON file with a set of constants that sync together each step and what they're is doing**. Creating this file is easily done with the [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants) helper. See the react4xp-buildconstants documentation for the full structure it creates in the JSON file - this defines a React4xp project structure, and if you decide to make your own constants file manually, you'll still need to stick to that structure inside it (at least the upper-case attributes. The `recommended` attribute only contains suggestions used only one place. Use hardcoded values instead if you want, for example instead of `recommended.buildEntriesAndChunks.ENTRY_SETS` in `webpack.config.js` here.
+React4xp has several steps that are necessary to work smoothly. You can use it out-of-the-box bys stringing the helpers and libraries together as-is, or you can fork/modify/override/mess with each of the steps as you want - but they role each of them plays is mandatory and shouldn't be skipped (with one exception: [building your own externals chunk](https://www.npmjs.com/package/react4xp-runtime-externals) is optional).
+
+Binding these steps together is **a JSON file with a set of constants that sync together each step and what they're is doing**. Creating this file is easily done with the [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants) helper. See the react4xp-buildconstants documentation for [the full structure it creates in the JSON file](https://www.npmjs.com/package/react4xp-buildconstants#output). This defines a React4xp project structure, and if you decide to make your own constants file manually, you'll still need to stick to that structure inside it (at least the upper-case attributes. The `recommended` attribute only contains suggestions used only one place. Use hardcoded values instead if you want, for example instead of `recommended.buildEntriesAndChunks.ENTRY_SETS` in `webpack.config.js` here.
 
 The JSON config file can be wherever you want. When running this webpack script, use the [Webpack env parameter](https://webpack.js.org/guides/environment-variables/) `REACT4XP_CONFIG_FILE` to tell the script where to find it. Full path and name are needed. For example, using this package directly after installing:
 
@@ -28,37 +41,19 @@ webpack --config node_modules/react4xp-build-components/webpack.config.js --env.
 
 Looks for, and handles, React component that you add to the project sourcecode structure. These components are of three types, depending on where you put them:
 
-  - **React components bound to XP components**. These are JSX files inside the XP file structure, intended to be called from the component's controller JS, and inserted into the component's view HTML. Made to be easy to develop and use. Supported XP component types are currently pages and parts. Layouts might work, but this is not well tested so YMMV. 
-    - Note that in order to avoid name collisions with XP's controller JS files, the React component files must have a '.jsx' file name extension! So obviously, other files must not, and you should avoid compiling these JSX files in other build steps, for example if your XP controllers are ES6 files that need to be compiled in themselves. _react4xp-build-components_ won't touch these for you.
+#### 1: React components bound to XP components: 
+JSX files inside the XP file structure, intended to be called from the component's controller JS, and inserted into the component's view HTML. Made to be easy to develop and use. Supported XP component types are currently pages and parts. Layouts might work, but this is not well tested so YMMV. Note that in order to avoid name collisions with XP's controller JS files, **the React component files must have a '.jsx' file name extension**. So obviously, other files must not, and you should avoid compiling these JSX files in other build steps, for example if your XP controllers are ES6 files that need to be compiled in themselves. _react4xp-build-components_ won't touch these for you. The basic use case is to put JSX files in the same folder as the XP component that uses them.
   
-  - **Unbound components**. These are callable JSX files put below a particular, designated source folder in your project. That folder controlled by a constant you can set - see below. After compilation, it will be available to the React4xp runtime from any client-side context.
+#### 2: Unbound components: 
+Callable JSX files put below a particular, designated source folder in your project. After compilation, it will be available to the [React4xp runtime](FIXME: GET LINK TO THE RUNTIME LIB) from _anywhere_, for client-side and/or server-side rendering. The source folder is controlled by the `SRC_R4X_ENTRIES` [constant](#constants). Default value is `"<projectRootFullPath>/src/main/react4xp/_components"`. The "_component" subfolder name can be specifically controlled with the `R4X_ENTRY_SUBFOLDER` constant.
 
-  - **Shared components**. While the XP-bound and unbound components mentioned above are callable in runtime (top-level React components on the page, called React4xp _Entries_ - each a React "app" of their own), shared components are JSX files used by the entries: the entries import shared components. During compilation they are packed into component _chunks_: runtime libraries that are fetched when calling an entry component. Like other shared and heavily re-used libraries in the React4xp structure, these chunks are content-hased for effective HTTP client caching and cache busting. This is handled entirely by the React4xp runtime, using JSON files that also are produced by the react4xp-build-components build process. Shared component source files are put in a different designated folder in your project source, also controllable by a constant you can set.
+#### 3: Shared components:
+While the XP-bound and unbound components mentioned above are callable in runtime (top-level React components on the page, called React4xp _Entries_ - each a React "app" of their own), shared components are JSX files used by the entries: the entries import shared components. During compilation they are packed into component _chunks_: runtime libraries that are fetched when calling an entry component. Like other shared and heavily re-used libraries in the React4xp structure, these chunks are content-hased for effective HTTP client caching and cache busting. This is handled entirely by the React4xp runtime, using JSON files that also are produced by the react4xp-build-components build process. Shared component source files are put below the main react4xp source folder in your project source, also controllable by a constant you can set: `SRC_R4X` (default: `"<rootDir>/src/main/react4xp"`). If shared-component JSX files are put at the root of that folder, they will be packed into the entry files, making them bigger. It's better to put themn in subfolders - this will create chunks with the same name as the subfolder (just avoid the special folder pointed to by `R4X_ENTRY_SUBFOLDER`, which is only used for entries).
 
 
 ### Output
 
-
-
-
-
-Looks for source files in project subdirectories
-
-- src/main/react4xp: Here, each file under /_components/ will become a separate, top-level component/asset, and
-all other dependencies to those, in all other folders below react4xp, will be bundled into chunks by the name of
-the folder. Third-pardy dependencies in /node_modules/ will be separated out into a vendors bundle, except for externals,
-(based on config in <env.REACT4XP_CONFIG_FILE>, delivered by react-buildconstants and its config/overrides).
-
-All such second-level assets will have content-hashed file names for cache busting, hashes are stored for
-runtime reference in commonChunks.json.
-
-- ...and in the XP structure under src/main/resources/site: Here, JSX files are more tightly bound to their corresponding
-XP component (part, page, etc) but can still use the second-level dependency chunks mentioned above.
-
-
-
-
-
+Compiles these React components into a designated React4xp output folder. This is controllable by the `BUILD_R4X` [constant](#constants)
 
 
 
@@ -77,7 +72,7 @@ XP component (part, page, etc) but can still use the second-level dependency chu
 
 This starter abstracts away some complexity and makes React play nice with Enonic XP. The goal is to have a low threshold to get started and React components running, while also exposing some flexible functionality to allow a variety of use cases.
 
-It renders standard JSX files: they have a `.jsx` file extension, and they export as `default` a function with a `props` argument (exporting pure HTML element in JSX works too).
+It renders standard JSX files: they have a `.jsx` file extension, and 
 
 There's Babel support out of the box, for writing everything in glorious ES6.
 
@@ -142,8 +137,10 @@ An important part of the the work happens at build time, mainly by [webpack](htt
 Webpack detects JSX component entry files (see below) and **compiles** them to es5 under `build/resources/main/react4xp` (and `react4xp/` in the deployed JAR). The same compiled code is run by both the browser (client side rendering) or by Nashorn (server side rendering).
 
 Webpack uses [code splitting](https://webpack.js.org/guides/code-splitting/) and layers the compiled output.  
-  - **Entries**: minimal JS files that are one "app" each: a top-level React component. These are what will be fed into the React renderer, available to and runnable by the browser and importing other components. JSX files will be interpreted as React entries if the source files are found under the common XP structire (`src/main/resources/site`) or under a designated directory in React4xp itself (`src/main/react4xp/_components`).
+  - **Entries**: minimal JS files that are one "app" each: a top-level React component. These are what will be fed into the React renderer, available to and runnable by the browser and importing other components. JSX files will be interpreted as React entries if the source files are found under the common XP structire (`src/main/resources/site`) or under a designated directory in React4xp itself (`src/main/react4xp/_components`). Entry JSX files must export as `default` a function with a `props` argument (exporting pure HTML element in JSX works too).
+
   - **Chunks**: second-level bundles/libraries of shared React (or other) components, importable by the entries. You can force shared code to be bundled into a chunk without changing the webpack.config files: simply put the shared code into `.es6` or `.jsx` files in subdirectories below `src/main/react4xp` and import it from your entries. The build does the rest.
+
   - **Externals**: third-level and third-party libraries such as React itself, needed both at client and server side. At this level might also be a **vendors** chunk: the leftover, non-externals common deplendencies from `node_modules/`. Use the EXTERNALS object in `webpack.config.constants.json` to separate between externals and vendors chunks.
   
 This is done for performance by [client-side HTTP caching](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching): the chunks/externals/vendors bundle frequently used common dependencies into one, or a few, files that can be loaded client-side ideally just once, and be cached there for fast responsive pages (no need for PWA caching). Everything except the entries get a **content-dependent hash** added to the file name, so it only changes on actual updates to the dependencies. These hashes are exported by webpack to `chunks.*.json` files, which are used by XP to resolve the dependency file names. There's also a built `entries.json` file, which both allows developers to look up available entries, and lets the library exclude the entries from the hashed-name handling.
