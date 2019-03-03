@@ -63,12 +63,15 @@ Note that in order to avoid name collisions with XP's controller JS files, **the
 This type of component is an [Entry](#using-the-entries) JSX file, and must export as `default` a function with a `props` argument (exporting pure HTML element in JSX works too) that returns a standard React component - for example:
 
 ```jsx harmony
+
 // site/parts/example/example.jsx:
 
 import React from 'react';
 
 export default (props) => <p>Hello {props.worldOrSomething}!</p>;
+
 ```
+
 
 #### 2: Unbound components: 
 Callable JSX files put below a particular, designated source folder in your project. The source folder is controlled by the `SRC_R4X_ENTRIES` [constant](#constants). Default value is `<rootDir>/src/main/react4xp/_components`. The `_component` subfolder name can be specifically controlled with the `R4X_ENTRY_SUBFOLDER` constant.
