@@ -6,10 +6,11 @@ Webpack config script for compiling user-added React JSX components in an [Enoni
 
 This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup for your own project. You're encouraged to copy and expand the `webpack.config.js` from here as a template. If you do, it's recommended you still [use a config file for React4XP as described below](#constants-and-structure), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They detect the added React component files and builds the entry overview, normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
 
-Babel support, for the glory of ES6.
+Babel support, because ES6.
 
 ## Jump to:
   - [Install](#install)
+  - [Usage](#usage)
   - [Structure](#structure)
     - [Constants](#constants)
     - [Input](#input)
@@ -102,9 +103,10 @@ Each entry component has a name in runtime, or rather an **entry path** (called 
 
 Running the entry files and chunks in runtime, makes the components callable under a global object called `React4xp` (can be controlled with the constant `LIBRARY_NAME`). The entry name is also used for fetching the component code in runtime, exposed by the [React4xp runtime service](FIXME: GET LINK), which looks for the compiled file under `BUILD_R4X`.
 
-##### Examples:
+**For example:**
   - `<rootDir>/src/main/react4xp/_components / Example.jsx` will be compiled to `<rootDir>/build/resources/main/react4xp/Example.js` and has the name `Example`. It can be called in runtime as `React4xp.Example()`.
-  - `<rootDir>/src/main/resources/site / parts/example/example/example.jsx` has the entry name `site/parts/example/example`, etc
+  - `<rootDir>/src/main/resources/site / parts/example/example/example.jsx` has the entry name `site/parts/example/example`
+  - ...etc...
 
 
 #### More on code splitting
