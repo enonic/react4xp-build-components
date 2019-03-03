@@ -84,7 +84,9 @@ Also an [Entry](#using-the-entries) type, so the same rules apply to the files h
 #### 3: Shared components:
 JSX files _used by the entry components_: the entries import shared components. During compilation the shared components are [packed into component chunks](#more-on-code-splitting): runtime libraries that contain everything the entries need. 
 
-Shared component source files are put below the main React4xp source folder in your project source, also controllable by a [constant](#constants) you can set: `SRC_R4X` (default: `<rootDir>/src/main/react4xp`). **Put shared components in subfolders** below that - this will [create optimized chunks with the same name as the subfolder](#more-on-code-splitting). Just avoid the special folder pointed to by `R4X_ENTRY_SUBFOLDER`, which is only used for entries. If shared-component JSX files are put at the root of that folder, they will just be packed into the entry files themselves, making them bigger.
+Shared component source files are put below the main React4xp source folder in your project source, also controllable by a [constant](#constants) you can set: `SRC_R4X` (default: `<rootDir>/src/main/react4xp`). **Put shared components in subfolders** below that - this will put them into [optimized chunks with the same name as the subfolder](#more-on-code-splitting). Just avoid the special folder pointed to by `R4X_ENTRY_SUBFOLDER`, which is only used for entries. 
+
+Note that source files that aren't imported by entries will not be compiled to the build folder at all. And if you add source files right on the root of `<rootDir>/src/main/react4xp/` (or wherever `SRC_R4X` points), they will be bundled into the entry files that use them, instead of a chunk - increasing the entry's size!
 
 
 ### Output
