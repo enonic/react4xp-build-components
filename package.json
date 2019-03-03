@@ -1,0 +1,48 @@
+{
+    "name": "react4xp-build-components",
+    "version": "0.0.1",
+    "description": "React4xp helper: basic transpilation of React components in a React4xp structure",
+    "main": "webpack.config.js",
+    "files": [
+        "webpack.config.js",
+        "README.md"
+    ],
+    "scripts": {
+        "clean": "rimraf ./webpack.config.js",
+        "copy": "copyfiles --flat src/*.* .",
+        "prepublish": "npm run clean && npm run copy",
+        "postpublish": "npm run clean"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://bitbucket.org/espen42/react4xp-build-components"
+    },
+    "author": "Espen Norderud",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://bitbucket.org/espen42/react4xp-build-components"
+    },
+    "homepage": "https://bitbucket.org/espen42/react4xp-build-components",
+    "dependencies": {
+        "chunks-2-json-webpack-plugin": "^1.0.0",
+        "react4xp-build-entriesandchunks": "0.0.1",
+        "babel-loader": "^7.1.5",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-stage-0": "^6.24.1",
+        "babel-register": "^6.26.0",
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.2.3"
+    },
+    "peerDependencies": {},
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "copyfiles": "^2.1.0",
+        "rimraf": "^2.0.0"
+    },
+    "babel": {
+        "presets": [
+            "es2015",
+            "stage-0"
+        ]
+    }
+}
