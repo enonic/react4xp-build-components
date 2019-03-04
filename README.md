@@ -4,7 +4,7 @@
 
 Webpack config script for compiling user-added React JSX components in an [Enonic XP](https://enonic.com/developer-tour/web-application-platform) project. 
 
-This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup for your own project. You're encouraged to copy and expand the `webpack.config.js` from here as a template. If you do, it's recommended you still [use a config file for React4XP as described below](#constants-and-structure), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They detect the added React component files and builds the entry overview, normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
+This config only handles fairly basic React compilation, it's likely that you will need to fine-tune this setup for your own project. You're encouraged to copy and expand the `webpack.config.js` from here as a template. If you do, it's recommended you still [use a config file for React4XP as described below](#constants), and keep the steps using `react4xp-build-entriesandchunks` and `chunks-2-json-webpack-plugin`. They detect the added React component files and builds the entry overview, normalize the structure into what the other React4xp steps expect, especially the runtime, and make sure everything fits together.
 
 Babel support, because ES6.
 
@@ -161,7 +161,7 @@ Currently, there is no dependency specificity detected in the build. So the runt
 
 If you set the `EXTERNALS` [constant](#constants) object, it will be used as the `externals` value in this webpack config script. You can use the same config file with the [react4xp-runtime-externals](https://www.npmjs.com/package/react4xp-runtime-externals) helper, which will then build those libraries the same way as other dependencies but in a chunk of their own, nicely handled by the React4xp runtime. This allows them to function as regular webpack externals in the client, AND be used as dependencies for the react4xp runtime. This is also a different, easy way to insert additional dependency libraries that are needed both in client- and server-side runtime.
 
-Supported syntax is as a straight object in the config JSON file, for example:
+Supported syntax is as a straight object in the config JSON file, for example in `react4xpConfig.json`:
 
 ```json
 { 
