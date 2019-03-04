@@ -70,8 +70,9 @@ This type of component is an [Entry](#using-the-entries) JSX file, and must expo
 // site/parts/example/example.jsx:
 
 import React from 'react';
+import WorldGreeter from "/path/to/WorldGreeter"
 
-export default (props) => <p>Hello {props.worldOrSomething}!</p>;
+export default (props) => <WorldGreeter {...props} />;
 
 ```
 
@@ -163,15 +164,15 @@ If you set the `EXTERNALS` [constant](#constants) object, it will be used as the
 Supported syntax is as a straight object in the config JSON file, for example:
 
 ```json
-// react4xp_config.json
 { 
   ...
 
   "EXTERNALS": {
-    "react", "React",
-    "react-dom", "ReactDOM",
-    "library-name", "ReferenceInCode"    
+    "react": "React",
+    "react-dom": "ReactDOM",
+    "library-name": "ReferenceInCode"    
   },
+  
   ...
 }
 ```
