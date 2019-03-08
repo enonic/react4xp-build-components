@@ -16,7 +16,9 @@ const React4xpEntriesAndChunks = require('react4xp-build-entriesandchunks');
 
 module.exports = env => {
     const {
-        SRC_R4X, R4X_ENTRY_SUBFOLDER, BUILD_R4X, BUILD_ENV, LIBRARY_NAME, EXTERNALS, recommended
+        SRC_R4X, R4X_ENTRY_SUBFOLDER, BUILD_R4X, BUILD_ENV, LIBRARY_NAME, EXTERNALS,
+        CHUNK_CONTENTHASH, COMPONENT_CHUNKS_FILENAME, ENTRIES_FILENAME,
+        recommended
     } = require(env.REACT4XP_CONFIG_FILE);
 
 
@@ -25,6 +27,7 @@ module.exports = env => {
     const entries = React4xpEntriesAndChunks.getEntries(
         recommended.buildEntriesAndChunks.ENTRY_SETS,
         BUILD_R4X,
+        ENTRIES_FILENAME,
         DEVMODE
     );
     console.log("\nentries: " + JSON.stringify(entries, null, 2));
@@ -38,6 +41,12 @@ module.exports = env => {
     );
     console.log("\ncacheGroups: " + JSON.stringify(cacheGroups, null, 2));
 
+    // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
+    const chunkFileName = (!CHUNK_CONTENTHASH) ?
+        "[name].js" :
+        isNaN(CHUNK_CONTENTHASH) ?
+            CHUNK_CONTENTHASH :
+            `[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
 
     return {
         mode: BUILD_ENV,
@@ -47,7 +56,7 @@ module.exports = env => {
         output: {
             path: BUILD_R4X,                                // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
             filename: "[name].js",                          // <-- Does not hash entry component filenames
-            chunkFilename: "[name].[contenthash:9].js",     // <-- Hashes filenames of common-component chunk files
+            chunkFilename: chunkFileName,
             libraryTarget: 'var',
             library: [LIBRARY_NAME, '[name]'],
         },
@@ -85,7 +94,7 @@ module.exports = env => {
         },
 
         plugins: [
-            new Chunks2json({outputDir: BUILD_R4X, filename: 'chunks.json'}),
+            new Chunks2json({outputDir: BUILD_R4X, filename: COMPONENT_CHUNKS_FILENAME}),
         ]
     };
 };
