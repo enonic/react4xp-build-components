@@ -1,11 +1,12 @@
 {
     "name": "react4xp-build-components",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
     "main": "webpack.config.js",
     "files": [
         "webpack.config.js",
-        "README.md"
+        "README.md",
+        "LICENSE"
     ],
     "scripts": {
         "clean": "rimraf ./webpack.config.js && rimraf build",
