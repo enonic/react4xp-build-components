@@ -1,6 +1,6 @@
 {
     "name": "react4xp-build-components",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
     "main": "webpack.config.js",
     "files": [
@@ -33,7 +33,7 @@
         "babel-preset-stage-0": "^6.24.1",
         "babel-register": "^6.26.0",
         "react": "^16.8.4",
-        "react4xp-build-entriesandchunks": "^0.3.1",
+        "react4xp-build-entriesandchunks": "^0.3.0",
         "stats-webpack-plugin": "^0.7.0",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3"
