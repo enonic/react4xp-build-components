@@ -1,7 +1,7 @@
 // Webpack for transpiling user-added JS, primarily react JSX components: top-level or shared components, component libraries.
 // Looks mainy for JSX files in:
 //
-// - src/main/react4xp: Here, each file under /_components/ will become a separate, top-level component/asset, and
+// - src/main/react4xp: Here, each file under /_entries/ will become a separate, top-level component/asset, and
 // all other dependencies to those, in all other folders below react4xp, will be bundled into chunks by the name of
 // the folder. Third-pardy dependencies in /node_modules/ will be separated out into a vendors bundle, except for externals,
 // (based on config in <env.REACT4XP_CONFIG_FILE>, delivered by react-buildconstants and its config/overrides).
