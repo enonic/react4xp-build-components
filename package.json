@@ -66,5 +66,17 @@
       "react",
       "stage-0"
     ]
+  },
+  "lint-staged": {
+    "*.{js,jsx,json}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test"
+    }
   }
 }
