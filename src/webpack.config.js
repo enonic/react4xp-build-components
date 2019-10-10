@@ -13,10 +13,9 @@
 // XP component (part, page, etc) but can still use the second-level dependency chunks mentioned above.
 const React4xpEntriesAndChunks = require("react4xp-build-entriesandchunks");
 const StatsPlugin = require("stats-webpack-plugin");
+const path = require("path");
 
-module.exports = env => {
-  env = env || {};
-
+module.exports = (env = {}) => {
   const {
     SRC_R4X,
     R4X_ENTRY_SUBFOLDER,
@@ -28,6 +27,7 @@ module.exports = env => {
     CHUNK_CONTENTHASH,
     ENTRIES_FILENAME,
     recommended
+    // eslint-disable-next-line import/no-dynamic-require, global-require
   } = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
 
   console.log(
@@ -45,7 +45,7 @@ module.exports = env => {
     },
     null,
     2
-  ); //*/
+  ); //* /
 
   const DEVMODE = BUILD_ENV !== "production";
 
@@ -55,7 +55,7 @@ module.exports = env => {
     ENTRIES_FILENAME,
     DEVMODE
   );
-  console.log("\nentries: " + JSON.stringify(entries, null, 2));
+  console.log(`\nentries: ${JSON.stringify(entries, null, 2)}`);
 
   const cacheGroups = React4xpEntriesAndChunks.getCacheGroups(
     SRC_R4X,
@@ -63,14 +63,21 @@ module.exports = env => {
     { sharedComps: 2 },
     DEVMODE
   );
-  console.log("\ncacheGroups: " + JSON.stringify(cacheGroups, null, 2));
+  console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}`);
 
   // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
-  const chunkFileName = !CHUNK_CONTENTHASH
-    ? "[name].js"
-    : isNaN(CHUNK_CONTENTHASH)
-    ? CHUNK_CONTENTHASH
-    : `[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
+  let chunkFileName;
+
+  if (!CHUNK_CONTENTHASH) {
+    chunkFileName = "[name].js";
+  } else if (typeof CHUNK_CONTENTHASH === "string") {
+    chunkFileName = CHUNK_CONTENTHASH;
+  } else {
+    chunkFileName = `[name].[contenthash:${parseInt(
+      CHUNK_CONTENTHASH,
+      10
+    )}].js`;
+  }
 
   return {
     mode: BUILD_ENV,
