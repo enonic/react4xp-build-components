@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // Webpack for transpiling user-added JS, primarily react JSX components: top-level or shared components, component libraries.
 // Looks mainy for JSX files in:
 //

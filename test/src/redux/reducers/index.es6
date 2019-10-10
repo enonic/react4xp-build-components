@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
-import greetingsReducer from './greetingsRed';
+import greetingsReducer from "./greetingsRed";
 
 export default combineReducers({
-    greetings: greetingsReducer,
+  greetings: greetingsReducer
 });
