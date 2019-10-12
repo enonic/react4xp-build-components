@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
