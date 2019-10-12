@@ -1,60 +1,86 @@
 {
-    "name": "react4xp-build-components",
-    "version": "0.3.5",
-    "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
-    "main": "webpack.config.js",
-    "files": [
-        "webpack.config.js",
-        "README.md",
-        "LICENSE"
-    ],
-    "scripts": {
-        "clean": "rimraf ./webpack.config.js && rimraf build",
-        "copy": "copyfiles --flat src/*.* .",
-        "pretest": "node_modules/react4xp-buildconstants/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
-        "test": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=$(pwd)/build/constants.json",
-        "prepublish": "npm run clean && npm run copy",
-        "postpublish": "npm run clean"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/enonic/react4xp-build-components"
-    },
-    "author": "Espen Norderud",
-    "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/enonic/react4xp-build-components"
-    },
-    "homepage": "https://github.com/enonic/react4xp-build-components",
-    "dependencies": {
-        "babel-loader": "^7.1.5",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-react": "^6.24.1",
-        "babel-preset-stage-0": "^6.24.1",
-        "babel-register": "^6.26.0",
-        "react": "^16.8.4",
-        "react4xp-build-entriesandchunks": "^0.3.2",
-        "stats-webpack-plugin": "^0.7.0",
-        "webpack": "^4.29.6",
-        "webpack-cli": "^3.2.3"
-    },
-    "peerDependencies": {
-        "react4xp-buildconstants": "^0.7.4"
-    },
-    "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "copyfiles": "^2.1.0",
-        "duckfactory": "^1.3.5",
-        "react-redux": "^6.0.1",
-        "react4xp-buildconstants": "^0.7.4",
-        "redux": "^4.0.1",
-        "rimraf": "^2.0.0"
-    },
-    "babel": {
-        "presets": [
-            "es2015",
-            "react",
-            "stage-0"
-        ]
+  "name": "react4xp-build-components",
+  "version": "0.3.5",
+  "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
+  "main": "webpack.config.js",
+  "files": [
+    "webpack.config.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "rimraf ./webpack.config.js && rimraf build",
+    "copy": "copyfiles --flat src/*.* .",
+    "pretest": "node_modules/react4xp-buildconstants/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
+    "test": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=/build/constants.json",
+    "prepublish": "npm run clean && npm run copy",
+    "postpublish": "npm run clean",
+    "lint": "eslint src/**/* --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enonic/react4xp-build-components"
+  },
+  "author": "Espen Norderud",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/enonic/react4xp-build-components"
+  },
+  "homepage": "https://github.com/enonic/react4xp-build-components",
+  "dependencies": {
+    "babel-loader": "^7.1.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "react": "^16.8.4",
+    "react4xp-build-entriesandchunks": "^0.3.2",
+    "stats-webpack-plugin": "^0.7.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
+  },
+  "peerDependencies": {
+    "react4xp-buildconstants": "^0.7.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.3",
+    "copyfiles": "^2.1.0",
+    "duckfactory": "^1.3.5",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-json": "^1.4.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "husky": "^1.2.0",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.18.2",
+    "react-redux": "^6.0.1",
+    "react4xp-buildconstants": "^0.7.4",
+    "redux": "^4.0.1",
+    "rimraf": "^2.0.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react",
+      "stage-0"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,jsx,json}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test"
     }
+  }
 }
