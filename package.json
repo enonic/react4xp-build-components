@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.3.6",
+  "version": "0.3.8",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -33,14 +33,15 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.26.0",
-    "react": "^16.8.4",
     "react4xp-build-entriesandchunks": "^0.3.2",
-    "stats-webpack-plugin": "^0.7.0",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "stats-webpack-plugin": "^0.7.0"
   },
   "peerDependencies": {
-    "react4xp-buildconstants": "^0.7.4"
+    "react4xp-buildconstants": "^0.7.4",
+    "react": "*",
+    "react-dom": "*",
+    "webpack": "^4",
+    "webpack-cli": "^3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -59,10 +60,13 @@
     "husky": "^1.2.0",
     "lint-staged": "^8.1.7",
     "prettier": "^1.18.2",
+    "react": "^16.8.4",
     "react-redux": "^6.0.1",
     "react4xp-buildconstants": "^0.7.4",
     "redux": "^4.0.1",
-    "rimraf": "^2.0.0"
+    "rimraf": "^2.0.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
   },
   "babel": {
     "presets": [
