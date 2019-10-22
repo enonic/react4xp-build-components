@@ -94,7 +94,8 @@ module.exports = (env = {}) => {
     },
 
     resolve: {
-      extensions: [".es6", ".js", ".jsx", ".less"]
+      extensions: [".es6", ".js", ".jsx", ".less"],
+      symlinks: false
     },
 
     devtool: DEVMODE ? "source-map" : false,
