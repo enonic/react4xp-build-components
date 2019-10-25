@@ -31,40 +31,54 @@ module.exports = (env = {}) => {
     // eslint-disable-next-line import/no-dynamic-require, global-require
   } = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
 
-  console.log(
-    {
-      SRC_R4X,
-      R4X_ENTRY_SUBFOLDER,
-      BUILD_R4X,
-      BUILD_ENV,
-      LIBRARY_NAME,
-      EXTERNALS,
-      COMPONENT_STATS_FILENAME,
-      CHUNK_CONTENTHASH,
-      ENTRIES_FILENAME,
-      recommended
-    },
-    null,
-    2
-  ); //* /
-
   const DEVMODE = BUILD_ENV !== "production";
+  const VERBOSE = `${env.VERBOSE || ""}`.trim().toLowerCase() === "true";
+
+  // TODO: Probably more consistent if this too is a master config file property. Add to react4xp-buildconstants and import above from env.REACT4XP_CONFIG_FILE.
+  let OVERRIDE_COMPONENT_WEBPACK = `${env.OVERRIDE_COMPONENT_WEBPACK ||
+    ""}`.trim();
+  let overrideCallback = (_, config) => config;
+  if (OVERRIDE_COMPONENT_WEBPACK) {
+    OVERRIDE_COMPONENT_WEBPACK = path.join(
+      process.cwd(),
+      OVERRIDE_COMPONENT_WEBPACK
+    );
+
+    // eslint-disable-next-line import/no-dynamic-require, global-require
+    const overridden = require(OVERRIDE_COMPONENT_WEBPACK);
+
+    if (typeof overridden === "object") {
+      overrideCallback = () => overridden;
+    } else if (typeof overridden === "function") {
+      overrideCallback = overridden;
+    } else {
+      throw Error(
+        `Optional overrideComponentWebpack (${OVERRIDE_COMPONENT_WEBPACK}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
+      );
+    }
+  }
 
   const entries = React4xpEntriesAndChunks.getEntries(
     recommended.buildEntriesAndChunks.ENTRY_SETS,
     BUILD_R4X,
     ENTRIES_FILENAME,
-    DEVMODE
+    VERBOSE
   );
-  console.log(`\nentries: ${JSON.stringify(entries, null, 2)}`);
+
+  if (VERBOSE) {
+    console.log(`\nentries: ${JSON.stringify(entries, null, 2)}\n`);
+  }
 
   const cacheGroups = React4xpEntriesAndChunks.getCacheGroups(
     SRC_R4X,
     [R4X_ENTRY_SUBFOLDER],
     { sharedComps: 2 },
-    DEVMODE
+    VERBOSE
   );
-  console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}`);
+
+  if (VERBOSE) {
+    console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}\n`);
+  }
 
   // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
   let chunkFileName;
@@ -80,7 +94,7 @@ module.exports = (env = {}) => {
     )}].js`;
   }
 
-  return {
+  const config = {
     mode: BUILD_ENV,
 
     entry: entries,
@@ -161,4 +175,18 @@ module.exports = (env = {}) => {
       })
     ]
   };
+
+  const outputConfig = overrideCallback(env, config);
+
+  if (VERBOSE) {
+    console.log(
+      `\nreact4xp-buildcomponents: webpack config output${
+        OVERRIDE_COMPONENT_WEBPACK
+          ? ` (ADJUSTED BY ${OVERRIDE_COMPONENT_WEBPACK}): `
+          : ": "
+      }${JSON.stringify(outputConfig, null, 2)}\n`
+    );
+  }
+
+  return outputConfig;
 };
