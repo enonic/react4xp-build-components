@@ -31,40 +31,30 @@ module.exports = (env = {}) => {
     // eslint-disable-next-line import/no-dynamic-require, global-require
   } = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
 
-  console.log(
-    {
-      SRC_R4X,
-      R4X_ENTRY_SUBFOLDER,
-      BUILD_R4X,
-      BUILD_ENV,
-      LIBRARY_NAME,
-      EXTERNALS,
-      COMPONENT_STATS_FILENAME,
-      CHUNK_CONTENTHASH,
-      ENTRIES_FILENAME,
-      recommended
-    },
-    null,
-    2
-  ); //* /
-
   const DEVMODE = BUILD_ENV !== "production";
+  const VERBOSE = `${env.VERBOSE || ""}`.trim().toLowerCase() === "true";
 
   const entries = React4xpEntriesAndChunks.getEntries(
     recommended.buildEntriesAndChunks.ENTRY_SETS,
     BUILD_R4X,
     ENTRIES_FILENAME,
-    DEVMODE
+    VERBOSE
   );
-  console.log(`\nentries: ${JSON.stringify(entries, null, 2)}`);
+
+  if (VERBOSE) {
+    console.log(`\nentries: ${JSON.stringify(entries, null, 2)}\n`);
+  }
 
   const cacheGroups = React4xpEntriesAndChunks.getCacheGroups(
     SRC_R4X,
     [R4X_ENTRY_SUBFOLDER],
     { sharedComps: 2 },
-    DEVMODE
+    VERBOSE
   );
-  console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}`);
+
+  if (VERBOSE) {
+    console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}\n`);
+  }
 
   // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
   let chunkFileName;
