@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -12,8 +12,10 @@
     "clean": "rimraf ./webpack.config.js && rimraf build",
     "copy": "copyfiles --flat src/*.* .",
     "pretest": "node_modules/react4xp-buildconstants/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
-    "test": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=/build/constants.json",
-    "prepublish": "npm run clean && npm run copy",
+    "test": "npm run testRaw && npm run testOverride",
+    "testRaw": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true",
+    "testOverride": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.OVERRIDE_COMPONENT_WEBPACK=test/webpack.config.override.js --env.VERBOSE=true",
+    "prepublish": "npm run clean && npm run copy && npm run test",
     "postpublish": "npm run clean",
     "lint": "eslint src/**/* --fix"
   },
