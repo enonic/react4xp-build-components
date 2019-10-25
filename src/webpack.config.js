@@ -108,7 +108,7 @@ module.exports = (env = {}) => {
     },
 
     resolve: {
-      extensions: [".es6", ".js", ".jsx", ".less"]
+      extensions: [".es6", ".js", ".jsx"]
     },
 
     devtool: DEVMODE ? "source-map" : false,
@@ -124,10 +124,6 @@ module.exports = (env = {}) => {
             compact: !DEVMODE,
             presets: ["react"]
           }
-        },
-        {
-          test: /\.less$/,
-          loaders: ["style-loader", "css-loader", "less-loader"]
         }
       ]
     },
