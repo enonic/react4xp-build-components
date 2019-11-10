@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf ./webpack.config.js && rimraf build",
     "copy": "copyfiles --flat src/*.* .",
-    "pretest": "node_modules/react4xp-buildconstants/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
+    "pretest": "node_modules/react4xp-buildconstants/bin/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
     "test": "npm run testRaw && npm run testOverride",
     "testRaw": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true",
     "testOverride": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.OVERRIDE_COMPONENT_WEBPACK=test/webpack.config.override.js --env.VERBOSE=true",
@@ -39,7 +39,7 @@
     "stats-webpack-plugin": "^0.7.0"
   },
   "peerDependencies": {
-    "react4xp-buildconstants": "^0.7.7",
+    "react4xp-buildconstants": "^0.7.10",
     "react": "*",
     "react-dom": "*",
     "webpack": "^4",
@@ -64,7 +64,8 @@
     "prettier": "^1.18.2",
     "react": "^16.8.4",
     "react-redux": "^6.0.1",
-    "react4xp-buildconstants": "^0.7.7",
+    "react4xp-buildconstants": "^0.7.10",
+    "react4xp-templates": "^0.1.0",
     "redux": "^4.0.1",
     "rimraf": "^2.0.0",
     "webpack": "^4.29.6",

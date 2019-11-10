@@ -5,7 +5,7 @@ module.exports = function(env, config) {
   if (
     config.plugins[0].output !== "stats.components.json" ||
     config.externals["react-dom/server"] !== "ReactDOMServer" ||
-    config.devtool !== "source-map"
+    config.devtool !== false
   ) {
     console.log("---------------------- UNEXPECTED DATA:");
     console.log(JSON.stringify(config, null, 2));

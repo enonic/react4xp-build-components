@@ -116,9 +116,9 @@ module.exports = (env = {}) => {
     module: {
       rules: [
         {
-          // Babel for building static assets
+          // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/react4xp-templates
           test: /\.((jsx?)|(es6))$/,
-          exclude: /[\\/]node_modules[\\/]/,
+          exclude: /(?=.*[\\/]node_modules[\\/](?!react4xp-templates))^(\w+)$/,
           loader: "babel-loader",
           query: {
             compact: !DEVMODE,
