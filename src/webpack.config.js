@@ -15,6 +15,7 @@
 const React4xpEntriesAndChunks = require("react4xp-build-entriesandchunks");
 const StatsPlugin = require("stats-webpack-plugin");
 const path = require("path");
+const fs = require("fs");
 
 module.exports = (env = {}) => {
   const {
@@ -22,12 +23,12 @@ module.exports = (env = {}) => {
     R4X_ENTRY_SUBFOLDER,
     BUILD_R4X,
     BUILD_ENV,
+    SRC_SITE,
     LIBRARY_NAME,
     EXTERNALS,
     COMPONENT_STATS_FILENAME,
     CHUNK_CONTENTHASH,
-    ENTRIES_FILENAME,
-    recommended
+    ENTRIES_FILENAME
     // eslint-disable-next-line import/no-dynamic-require, global-require
   } = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
 
@@ -58,18 +59,135 @@ module.exports = (env = {}) => {
     }
   }
 
+  const chunkDirs = env.CHUNK_DIRS
+    ? env.CHUNK_DIRS.trim()
+        .replace(/[´`'"]/g, "")
+        .split(",")
+        .map(dir => path.join(SRC_R4X, dir.trim()))
+        .filter(dir => {
+          if (fs.existsSync(dir)) {
+            if (!fs.lstatSync(dir).isDirectory()) {
+              throw Error(
+                `Can't add chunkDir: ${dir} was found but is not a directory. Probably check chunkDirs in react4xp.properties.`
+              );
+            }
+            return true;
+          }
+          console.warn(
+            `ChunkDir from react4xp.properties was not found. Skipping: ${dir}`
+          );
+          return false;
+        })
+    : [];
+
+  const entryDirs = env.ENTRY_DIRS
+    ? env.ENTRY_DIRS.trim()
+        .replace(/[´`'"]/g, "")
+        .split(",")
+        .map(dir => path.join(SRC_R4X, dir.trim()))
+        .filter(dir => {
+          if (fs.existsSync(dir)) {
+            if (!fs.lstatSync(dir).isDirectory()) {
+              throw Error(
+                `Can't add entryDir: ${dir} was found but is not a directory. Probably check entryDirs in react4xp.properties.`
+              );
+            }
+            return true;
+          }
+          console.warn(
+            `EntryDir from react4xp.properties was not found. Skipping: ${dir}`
+          );
+          return false;
+        })
+    : [];
+
+  const entryExtensions = (env.ENTRY_EXT || "")
+    .trim()
+    .replace(/[´`'"]/g, "")
+    .split(",")
+    .map(ext => ext.trim())
+    .map(ext => ext.replace(/^\./, ""))
+    .filter(ext => !!ext);
+
+  console.log(
+    `chunkDirs (${
+      Array.isArray(chunkDirs)
+        ? `array[${chunkDirs.length}]`
+        : typeof chunkDirs +
+          (chunkDirs && typeof chunkDirs === "object"
+            ? ` with keys: ${JSON.stringify(Object.keys(chunkDirs))}`
+            : "")
+    }): ${JSON.stringify(chunkDirs, null, 2)}`
+  );
+
+  console.log(
+    `entryDirs (${
+      Array.isArray(entryDirs)
+        ? `array[${entryDirs.length}]`
+        : typeof entryDirs +
+          (entryDirs && typeof entryDirs === "object"
+            ? ` with keys: ${JSON.stringify(Object.keys(entryDirs))}`
+            : "")
+    }): ${JSON.stringify(entryDirs, null, 2)}`
+  );
+
+  console.log(
+    `entryExtensions (${
+      Array.isArray(entryExtensions)
+        ? `array[${entryExtensions.length}]`
+        : typeof entryExtensions +
+          (entryExtensions && typeof entryExtensions === "object"
+            ? ` with keys: ${JSON.stringify(Object.keys(entryExtensions))}`
+            : "")
+    }): ${JSON.stringify(entryExtensions, null, 2)}`
+  );
+
+  const entrySets = [
+    {
+      sourcePath: SRC_SITE,
+      sourceExtensions: ["jsx", "tsx"],
+      targetSubDir: "site"
+    },
+    {
+      sourcePath: path.join(
+        process.cwd(),
+        "node_modules",
+        "react4xp-templates",
+        "_entries"
+      ),
+      sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"]
+    },
+    ...entryDirs.map(entryDir => ({
+      sourcePath: entryDir,
+      sourceExtensions: entryExtensions
+    }))
+  ];
+
   const entries = React4xpEntriesAndChunks.getEntries(
-    recommended.buildEntriesAndChunks.ENTRY_SETS,
+    entrySets,
     BUILD_R4X,
     ENTRIES_FILENAME,
     VERBOSE
   );
 
   if (VERBOSE) {
-    console.log(`\nentries: ${JSON.stringify(entries, null, 2)}\n`);
+    console.log(
+      `\nentries (${
+        Array.isArray(entries)
+          ? `array[${entries.length}]`
+          : typeof entries +
+            (entries && typeof entries === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(entries))}`
+              : "")
+      }): ${JSON.stringify(entries, null, 2)}`
+    );
   }
 
   const cacheGroups = React4xpEntriesAndChunks.getCacheGroups(
+    // TODO: Ditch the auto-by-folder chunking, get it from react4xp.properties: chunks
+    // TODO: Allow chunks from outside of react4xp/ ?
+    // TODO: All things imported under react4xp/ and NOT in entries or chunks: a single react4xp.<hash>.js chunk.
+
     SRC_R4X,
     [R4X_ENTRY_SUBFOLDER],
     { sharedComps: 2 },
