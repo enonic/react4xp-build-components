@@ -20,7 +20,6 @@ const fs = require("fs");
 module.exports = (env = {}) => {
   const {
     SRC_R4X,
-    R4X_ENTRY_SUBFOLDER,
     BUILD_R4X,
     BUILD_ENV,
     SRC_SITE,
@@ -63,7 +62,8 @@ module.exports = (env = {}) => {
     ? env.CHUNK_DIRS.trim()
         .replace(/[´`'"]/g, "")
         .split(",")
-        .map(dir => path.join(SRC_R4X, dir.trim()))
+        .map(dir => dir.replace(/[\\/]/g, path.sep))
+        .map(dir => path.resolve(path.join(SRC_R4X, dir.trim())))
         .filter(dir => {
           if (fs.existsSync(dir)) {
             if (!fs.lstatSync(dir).isDirectory()) {
@@ -84,7 +84,8 @@ module.exports = (env = {}) => {
     ? env.ENTRY_DIRS.trim()
         .replace(/[´`'"]/g, "")
         .split(",")
-        .map(dir => path.join(SRC_R4X, dir.trim()))
+        .map(dir => dir.replace(/[\\/]/g, path.sep))
+        .map(dir => path.resolve(path.join(SRC_R4X, dir.trim())))
         .filter(dir => {
           if (fs.existsSync(dir)) {
             if (!fs.lstatSync(dir).isDirectory()) {
@@ -118,28 +119,6 @@ module.exports = (env = {}) => {
             ? ` with keys: ${JSON.stringify(Object.keys(chunkDirs))}`
             : "")
     }): ${JSON.stringify(chunkDirs, null, 2)}`
-  );
-
-  console.log(
-    `entryDirs (${
-      Array.isArray(entryDirs)
-        ? `array[${entryDirs.length}]`
-        : typeof entryDirs +
-          (entryDirs && typeof entryDirs === "object"
-            ? ` with keys: ${JSON.stringify(Object.keys(entryDirs))}`
-            : "")
-    }): ${JSON.stringify(entryDirs, null, 2)}`
-  );
-
-  console.log(
-    `entryExtensions (${
-      Array.isArray(entryExtensions)
-        ? `array[${entryExtensions.length}]`
-        : typeof entryExtensions +
-          (entryExtensions && typeof entryExtensions === "object"
-            ? ` with keys: ${JSON.stringify(Object.keys(entryExtensions))}`
-            : "")
-    }): ${JSON.stringify(entryExtensions, null, 2)}`
   );
 
   const entrySets = [
@@ -183,19 +162,109 @@ module.exports = (env = {}) => {
     );
   }
 
-  const cacheGroups = React4xpEntriesAndChunks.getCacheGroups(
-    // TODO: Ditch the auto-by-folder chunking, get it from react4xp.properties: chunks
-    // TODO: Allow chunks from outside of react4xp/ ?
-    // TODO: All things imported under react4xp/ and NOT in entries or chunks: a single react4xp.<hash>.js chunk.
+  const react4xpExclusions = [...entryDirs, ...chunkDirs]
+    .filter(dir => dir.startsWith(SRC_R4X))
+    .map(dir => dir.slice(SRC_R4X.length))
+    .map(d => {
+      let dir = d;
+      if (dir.startsWith(path.sep)) {
+        dir = dir.slice(1);
+      }
+      if (dir.endsWith(path.sep)) {
+        dir = dir.slice(0, dir.length - 1);
+      }
+      console.log("\t==>", dir, "\n");
+      return dir;
+    })
+    // TODO: escape characters in folder names that actually are regexp characters
+    .join("|")
+    .trim();
 
-    SRC_R4X,
-    [R4X_ENTRY_SUBFOLDER],
-    { sharedComps: 2 },
-    VERBOSE
-  );
+  const cacheGroups = {
+    vendors: {
+      name: "vendors",
+      enforce: true,
+      test: /[\\/]node_modules[\\/]((?!(react4xp-templates)).)[\\/]/,
+      chunks: "all",
+      priority: 100
+    },
+    templates: {
+      name: "vendors",
+      enforce: true,
+      test: /[\\/]node_modules[\\/]react4xp-templates[\\/]/,
+      chunks: "all",
+      priority: 99
+    },
+    react4xp: {
+      name: "react4xp",
+      enforce: true,
+      chunks: "all",
+      priority: 1,
+      test: /* new RegExp( */ `${SRC_R4X}${
+        // TODO: re-regexp this!
+        react4xpExclusions ? `[\\/]((?!(${react4xpExclusions})).)[\\/]` : ""
+      }`
+      /* , 'g')
+       */
+    }
+  };
+
+  const takenNames = ["vendors", "templates", "react4xp"];
+  chunkDirs.forEach(chunkDir => {
+    let name = chunkDir.split(path.sep).slice(-1)[0];
+    if (takenNames.indexOf(name) !== -1) {
+      name = `react4xp_${chunkDir
+        .slice(SRC_R4X.length)
+        .replace(new RegExp(path.sep, "g"), "__")}`;
+
+      while (takenNames.indexOf(name) !== -1) {
+        name += "_";
+      }
+    }
+    takenNames.push(name);
+
+    const chunkExclusions = [...entryDirs, ...chunkDirs]
+      .filter(dir => dir !== chunkDir && dir.startsWith(chunkDir))
+      .map(dir => dir.slice(chunkDir.length))
+      .map(d => {
+        let dir = d;
+        if (dir.startsWith(path.sep)) {
+          dir = dir.slice(1);
+        }
+        if (dir.endsWith(path.sep)) {
+          dir = dir.slice(0, dir.length - 1);
+        }
+        console.log("\t==>", dir, "\n");
+        return dir;
+      })
+      // TODO: escape characters in folder names that actually are regexp characters
+      .join("|")
+      .trim();
+    const test = /* new RegExp( */ `${chunkDir}${
+      // TODO: re-regexp this!
+      chunkExclusions ? `[\\/]((?!(${chunkExclusions})).)[\\/]` : ""
+    }`; /* , 'g') */
+
+    cacheGroups[name] = {
+      name,
+      test,
+      enforce: true,
+      chunks: "all",
+      priority: 1
+    };
+  });
 
   if (VERBOSE) {
-    console.log(`\ncacheGroups: ${JSON.stringify(cacheGroups, null, 2)}\n`);
+    console.log(
+      `cacheGroups (${
+        Array.isArray(cacheGroups)
+          ? `array[${cacheGroups.length}]`
+          : typeof cacheGroups +
+            (cacheGroups && typeof cacheGroups === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(cacheGroups))}`
+              : "")
+      }): ${JSON.stringify(cacheGroups, null, 2)}`
+    );
   }
 
   // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
