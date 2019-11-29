@@ -13,7 +13,7 @@
     "copy": "copyfiles --flat src/*.* .",
     "pretest": "node_modules/react4xp-buildconstants/bin/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
     "test": "npm run testRaw && npm run testOverride",
-    "testRaw": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true",
+    "testRaw": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true --env.ENTRY_DIRS=test/src/_entries --env.CHUNK_DIRS=test/src/_components,test/src/redux,test/src/sharedComps",
     "testOverride": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.OVERRIDE_COMPONENT_WEBPACK=test/webpack.config.override.js --env.VERBOSE=true",
     "prepublish": "npm run clean && npm run copy && npm run test",
     "postpublish": "npm run clean",

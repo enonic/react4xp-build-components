@@ -1,17 +1,5 @@
-/* eslint-disable no-console */
-// Webpack for transpiling user-added JS, primarily react JSX components: top-level or shared components, component libraries.
-// Looks mainy for JSX files in:
-//
-// - src/main/react4xp: Here, each file under /_entries/ will become a separate, top-level component/asset, and
-// all other dependencies to those, in all other folders below react4xp, will be bundled into chunks by the name of
-// the folder. Third-pardy dependencies in /node_modules/ will be separated out into a vendors bundle, except for externals,
-// (based on config in <env.REACT4XP_CONFIG_FILE>, delivered by react-buildconstants and its config/overrides).
-//
-// All such second-level assets will have content-hashed file names for cache busting, hashes are stored for
-// runtime reference in commonChunks.json.
-//
-// - ...and in the XP structure under src/main/resources/site: Here, JSX files are more tightly bound to their corresponding
-// XP component (part, page, etc) but can still use the second-level dependency chunks mentioned above.
+// TODO: New general comment explanation!
+
 const React4xpEntriesAndChunks = require("react4xp-build-entriesandchunks");
 const StatsPlugin = require("stats-webpack-plugin");
 const path = require("path");
@@ -98,7 +86,7 @@ const normalizeDirList = (
       )
     : [];
 
-const makeExclusionsString = (currentDir, otherDirs) =>
+const makeExclusionsRegexpString = (currentDir, otherDirs, VERBOSE) =>
   otherDirs
     .filter(dir => dir !== currentDir && dir.startsWith(currentDir))
     .map(dir => dir.slice(currentDir.length))
@@ -110,7 +98,8 @@ const makeExclusionsString = (currentDir, otherDirs) =>
       if (dir.endsWith(path.sep)) {
         dir = dir.slice(0, dir.length - 1);
       }
-      console.log("\t==>", dir, "\n");
+      if (VERBOSE)
+        console.log(`\tExcluding '${dir}' relative to '${currentDir}'`);
       return dir;
     })
     // TODO: escape characters in folder names that actually are regexp characters
@@ -179,7 +168,8 @@ module.exports = (env = {}) => {
     VERBOSE
   );
 
-  // Catching some likely troublemakers:
+  // -----------------------------------------------------------  Catching some likely troublemakers:
+
   symlinksUnderReact4xpRoot = Object.keys(symlinksUnderReact4xpRoot).filter(
     key => !!symlinksUnderReact4xpRoot[key]
   );
@@ -187,9 +177,9 @@ module.exports = (env = {}) => {
     console.warn(
       `Warning: ${
         symlinksUnderReact4xpRoot.length
-      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. Culprits: ${symlinksUnderReact4xpRoot.join(
-        ", "
-      )}`
+      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${symlinksUnderReact4xpRoot.join(
+        "', '"
+      )}'`
     );
   }
   const duplicates = chunkDirs.filter(dir => entryDirs.indexOf(dir) !== -1);
@@ -197,12 +187,56 @@ module.exports = (env = {}) => {
     throw Error(
       `${
         duplicates.length
-      } directories are listed both as chunkDirs and entryDirs in react4xp.properties: ${duplicates.join(
-        ", "
-      )}`
+      } directories in react4xp.properties are listed both as chunkDirs and entryDirs. Bad items are: '${duplicates.join(
+        "', '"
+      )}'`
     );
   }
 
+  const siteParsed = path.parse(SRC_SITE);
+  const tooGeneralPaths = SRC_SITE.split(path.sep).reduce((accum, current) => {
+    const longestPath = accum.slice(-1)[0];
+    if (longestPath === undefined) {
+      return [siteParsed.root];
+    }
+    const dir = path.resolve(longestPath, current);
+    if (dir !== SRC_SITE) {
+      accum.push(dir);
+    }
+    return accum;
+  }, []);
+
+  const badChunkDirs = chunkDirs.filter(
+    dir =>
+      dir === SRC_SITE ||
+      dir.startsWith(SRC_SITE) ||
+      tooGeneralPaths.indexOf(dir) !== -1
+  );
+  if (badChunkDirs.length) {
+    throw Error(
+      `${
+        badChunkDirs.length
+      } chunkDir(s) in react4xp.properties are illegal or too general. For chunkDirs, avoid 'src/main/resources/site' in general, and direct references to its parent directories. Bad items are: '${badChunkDirs.join(
+        "', '"
+      )}'`
+    );
+  }
+  const badEntryDirs = entryDirs.filter(
+    dir => tooGeneralPaths.indexOf(dir) !== -1
+  );
+  if (badEntryDirs.length) {
+    throw Error(
+      `${
+        badEntryDirs.length
+      } entryDir(s) in react4xp.properties are too general. For entryDirs, avoid direct references to the XP folder 'src/main/resources/' or its direct parent directories. Bad items are: '${badEntryDirs.join(
+        "', '"
+      )}'`
+    );
+  }
+
+  // ------------------- Build the entry list:
+
+  // Normalize and clean the entry extensions list:
   const entryExtensions = (env.ENTRY_EXT || "")
     .trim()
     .replace(/[´`'"]/g, "")
@@ -211,6 +245,7 @@ module.exports = (env = {}) => {
     .map(ext => ext.replace(/^\./, ""))
     .filter(ext => !!ext);
 
+  // Build the entries
   const entrySets = [
     {
       sourcePath: SRC_SITE,
@@ -222,7 +257,7 @@ module.exports = (env = {}) => {
         process.cwd(),
         "node_modules",
         "react4xp-templates",
-        "_entries"
+        "entries"
       ),
       sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"]
     },
@@ -252,21 +287,26 @@ module.exports = (env = {}) => {
     );
   }
 
-  const detectedTargetDirs = [...entryDirs, ...chunkDirs];
-  const react4xpExclusions = makeExclusionsString(SRC_R4X, detectedTargetDirs);
+  // ------------------------------  Make the webpack cacheGroups
 
+  const detectedTargetDirs = [...entryDirs, ...chunkDirs];
+  const react4xpExclusions = makeExclusionsRegexpString(
+    SRC_R4X,
+    detectedTargetDirs,
+    VERBOSE
+  );
   const cacheGroups = {
     vendors: {
       name: "vendors",
       enforce: true,
-      test: /[\\/]node_modules[\\/]((?!(react4xp-templates)).)[\\/]/,
+      test: "[\\/]node_modules[\\/]((?!(react4xp-templates)).)[\\/]?",
       chunks: "all",
       priority: 100
     },
     templates: {
       name: "vendors",
       enforce: true,
-      test: /[\\/]node_modules[\\/]react4xp-templates[\\/]/,
+      test: "[\\/]node_modules[\\/]react4xp-templates[\\/]?",
       chunks: "all",
       priority: 99
     },
@@ -276,11 +316,12 @@ module.exports = (env = {}) => {
       chunks: "all",
       priority: 1,
       test: `${SRC_R4X}${
-        react4xpExclusions ? `[\\/]((?!(${react4xpExclusions})).)[\\/]` : ""
+        react4xpExclusions ? `[\\/]((?!(${react4xpExclusions})).)[\\/]?` : ""
       }`
     }
   };
 
+  // Add new cacheGroups, excluding (by regexp) both other chunknames and entrydirs
   const takenNames = ["vendors", "templates", "react4xp"];
   chunkDirs.forEach(chunkDir => {
     let name = chunkDir.split(path.sep).slice(-1)[0];
@@ -295,9 +336,13 @@ module.exports = (env = {}) => {
     }
     takenNames.push(name);
 
-    const chunkExclusions = makeExclusionsString(chunkDir, detectedTargetDirs);
+    const chunkExclusions = makeExclusionsRegexpString(
+      chunkDir,
+      detectedTargetDirs,
+      VERBOSE
+    );
     const test = `${chunkDir}${
-      chunkExclusions ? `[\\/]((?!(${chunkExclusions})).)[\\/]` : ""
+      chunkExclusions ? `[\\/]((?!(${chunkExclusions})).)[\\/]?` : ""
     }`;
 
     cacheGroups[name] = {
@@ -330,6 +375,8 @@ module.exports = (env = {}) => {
           : cacheGroups[key].test
     };
   });
+
+  // ------------------------------------------
 
   // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
   let chunkFileName;
