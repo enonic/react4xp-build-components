@@ -10,12 +10,12 @@
   ],
   "scripts": {
     "clean": "rimraf ./webpack.config.js && rimraf build",
-    "copy": "copyfiles --flat src/*.* .",
-    "pretest": "node_modules/react4xp-buildconstants/bin/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/src\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/src/main/resources/site\\\"}\"",
+    "copy": "copyfiles --flat src/*.* . && node_modules/react4xp-buildconstants/bin/cli.js $(pwd) \"{\\\"verbose\\\":true,\\\"overwriteConstantsFile\\\":true,\\\"outputFileName\\\":\\\"$(pwd)/build/constants.json\\\",\\\"SRC_R4X\\\":\\\"$(pwd)/test/main/resources/react4xp\\\",\\\"SRC_SITE\\\":\\\"$(pwd)/test/main/resources/site\\\"}\"",
+    "pretest": "npm run clean && npm run copy",
     "test": "npm run testRaw && npm run testOverride",
-    "testRaw": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true --env.ENTRY_DIRS=test/src/_entries --env.CHUNK_DIRS=test/src/_components,test/src/redux,test/src/sharedComps",
-    "testOverride": "webpack --config src/webpack.config.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.OVERRIDE_COMPONENT_WEBPACK=test/webpack.config.override.js --env.VERBOSE=true",
-    "prepublish": "npm run clean && npm run copy && npm run test",
+    "testRaw": "webpack --config src/webpack.config.js --env.ENTRY_DIRS=entries --env.CHUNK_DIRS=sharedComps,redux --env.OVERRIDE_COMPONENT_WEBPACK=webpack.config.symlinks.override.js --env.REACT4XP_CONFIG_FILE=build/constants.json --env.VERBOSE=true ",
+    "testOverride": "webpack --config src/webpack.config.js --env.OVERRIDE_COMPONENT_WEBPACK=test/webpack.config.override.js --env.VERBOSE=true --env.REACT4XP_CONFIG_FILE=build/constants.json ",
+    "prepublish": "npm run test",
     "postpublish": "npm run clean",
     "lint": "eslint src/**/* --fix"
   },
@@ -79,7 +79,7 @@
     ]
   },
   "lint-staged": {
-    "*.{js,jsx,json}": [
+    "src/webpack.config.js": [
       "eslint --fix",
       "git add"
     ]

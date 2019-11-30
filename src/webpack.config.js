@@ -160,6 +160,7 @@ module.exports = (env = {}) => {
     symlinksUnderReact4xpRoot,
     VERBOSE
   );
+
   const entryDirs = normalizeDirList(
     env.ENTRY_DIRS,
     "entryDir",
@@ -237,7 +238,7 @@ module.exports = (env = {}) => {
   // ------------------- Build the entry list:
 
   // Normalize and clean the entry extensions list:
-  const entryExtensions = (env.ENTRY_EXT || "")
+  const entryExtensions = (env.ENTRY_EXT || "jsx,tsx,js,ts,es6,es")
     .trim()
     .replace(/[´`'"]/g, "")
     .split(",")
@@ -274,20 +275,63 @@ module.exports = (env = {}) => {
     VERBOSE
   );
 
-  if (VERBOSE) {
-    console.log(
-      `\nentries (${
+  // ------------------------------------------- Entries are generated. Error reporting and verbose output:
+
+  if (entries && typeof entries !== "object") {
+    console.error(
+      `react4xp-build-entriesandchunks used entrySets (${
+        Array.isArray(entrySets)
+          ? `array[${entrySets.length}]`
+          : typeof entrySets +
+            (entrySets && typeof entrySets === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
+              : "")
+      }): ${JSON.stringify(entrySets, null, 2)}`
+    );
+    throw Error(
+      `react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with verbose=true in react4xp.properties for more info. Expected an object, but got ${
         Array.isArray(entries)
           ? `array[${entries.length}]`
           : typeof entries +
             (entries && typeof entries === "object"
               ? ` with keys: ${JSON.stringify(Object.keys(entries))}`
               : "")
-      }): ${JSON.stringify(entries, null, 2)}`
+      }: ${JSON.stringify(entries)}`
     );
   }
 
-  // ------------------------------  Make the webpack cacheGroups
+  if (!entries || !Object.keys(entries).length) {
+    console.error(
+      `react4xp-build-entriesandchunks used entrySets (${
+        Array.isArray(entrySets)
+          ? `array[${entrySets.length}]`
+          : typeof entrySets +
+            (entrySets && typeof entrySets === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
+              : "")
+      }): ${JSON.stringify(entrySets, null, 2)}`
+    );
+    throw Error(
+      `react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
+        entries
+      )}). Tip: the combination of entryDirs and entryExtensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with verbose=true in react4xp.properties for more info.`
+    );
+  }
+
+  if (VERBOSE) {
+    console.log(
+      `\nreact4xp-build-components: entries (${
+        Array.isArray(entries)
+          ? `array[${entries.length}]`
+          : typeof entries +
+            (entries && typeof entries === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(entries))}`
+              : "")
+      }) = ${JSON.stringify(entries, null, 2)}`
+    );
+  }
+
+  // ------------------------------  Generated the webpack cacheGroups
 
   const detectedTargetDirs = [...entryDirs, ...chunkDirs];
   const react4xpExclusions = makeExclusionsRegexpString(
@@ -304,7 +348,7 @@ module.exports = (env = {}) => {
       priority: 100
     },
     templates: {
-      name: "vendors",
+      name: "templates",
       enforce: true,
       test: "[\\/]node_modules[\\/]react4xp-templates[\\/]?",
       chunks: "all",
@@ -357,7 +401,7 @@ module.exports = (env = {}) => {
   // Display the generated cachegroups:
   if (VERBOSE) {
     console.log(
-      `Generated cacheGroups (.test attributes that are strings will be turned into RegExp): ${JSON.stringify(
+      `react4xp-buikd-components generated cacheGroups (.test attributes that are strings will be turned into RegExp): ${JSON.stringify(
         cacheGroups,
         null,
         2
@@ -473,11 +517,11 @@ module.exports = (env = {}) => {
 
   if (VERBOSE) {
     console.log(
-      `\nreact4xp-buildcomponents: webpack config output${
+      `\n-------------------- react4xp-build-components: webpack config output${
         OVERRIDE_COMPONENT_WEBPACK
           ? ` (ADJUSTED BY ${OVERRIDE_COMPONENT_WEBPACK}): `
           : ": "
-      }${JSON.stringify(outputConfig, null, 2)}\n`
+      }${JSON.stringify(outputConfig, null, 2)}\n-------------------------`
     );
   }
 

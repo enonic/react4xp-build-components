@@ -1,6 +1,11 @@
 /* eslint-disable */
 module.exports = function(env, config) {
-  console.log(config);
+  console.log("\n---- Raw config: ----\n", JSON.stringify(config, null, 2), "---- /Raw config ----\n");
+
+  // This makes the devmode 'npm link' symlinks in node_modules work:
+  // eslint-disable-next-line no-param-reassign
+  config.resolve.symlinks = false;
+
   // Testing random expectations
   if (
     config.plugins[0].output !== "stats.components.json" ||
