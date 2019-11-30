@@ -258,7 +258,7 @@ module.exports = (env = {}) => {
         process.cwd(),
         "node_modules",
         "react4xp-templates",
-        "main.resources.entries"
+        "entries"
       ),
       sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"]
     },
