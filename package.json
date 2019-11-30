@@ -65,7 +65,7 @@
     "react": "^16.8.4",
     "react-redux": "^6.0.1",
     "react4xp-buildconstants": "^0.8.0",
-    "react4xp-templates": "^0.1.12",
+    "react4xp-templates": "^0.2.0",
     "redux": "^4.0.1",
     "rimraf": "^2.0.0",
     "webpack": "^4.29.6",
