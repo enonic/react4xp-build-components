@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -65,7 +65,7 @@
     "react": "^16.8.4",
     "react-redux": "^6.0.1",
     "react4xp-buildconstants": "^0.8.0",
-    "react4xp-templates": "^0.2.0",
+    "react4xp-regions": "^0.2.0",
     "redux": "^4.0.1",
     "rimraf": "^2.0.0",
     "webpack": "^4.29.6",

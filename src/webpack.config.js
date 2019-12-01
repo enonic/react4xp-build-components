@@ -257,7 +257,7 @@ module.exports = (env = {}) => {
       sourcePath: path.join(
         process.cwd(),
         "node_modules",
-        "react4xp-templates",
+        "react4xp-regions",
         "entries"
       ),
       sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"]
@@ -343,14 +343,14 @@ module.exports = (env = {}) => {
     vendors: {
       name: "vendors",
       enforce: true,
-      test: "[\\/]node_modules[\\/]((?!(react4xp-templates)).)[\\/]?",
+      test: "[\\/]node_modules[\\/]((?!(react4xp-regions)).)[\\/]?",
       chunks: "all",
       priority: 100
     },
     templates: {
       name: "templates",
       enforce: true,
-      test: "[\\/]node_modules[\\/]react4xp-templates[\\/]?",
+      test: "[\\/]node_modules[\\/]react4xp-regions[\\/]?",
       chunks: "all",
       priority: 99
     },
@@ -457,9 +457,9 @@ module.exports = (env = {}) => {
     module: {
       rules: [
         {
-          // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/react4xp-templates
+          // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/react4xp-regions
           test: /\.((jsx?)|(es6))$/,
-          exclude: /(?=.*[\\/]node_modules[\\/](?!react4xp-templates))^(\w+)$/,
+          exclude: /(?=.*[\\/]node_modules[\\/](?!react4xp-regions))^(\w+)$/,
           loader: "babel-loader",
           query: {
             compact: !DEVMODE,
