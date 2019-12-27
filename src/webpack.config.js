@@ -463,7 +463,7 @@ module.exports = (env = {}) => {
           loader: "babel-loader",
           query: {
             compact: !DEVMODE,
-            presets: ["react"]
+            presets: ["@babel/preset-react"]
           }
         }
       ]

@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.6.0",
+  "version": "0.6.1-SNAPSHOT",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -30,11 +30,6 @@
   },
   "homepage": "https://github.com/enonic/react4xp-build-components",
   "dependencies": {
-    "babel-loader": "^7.1.5",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "babel-register": "^6.26.0",
     "react4xp-build-entriesandchunks": "^0.4.0",
     "stats-webpack-plugin": "^0.7.0"
   },
@@ -46,8 +41,12 @@
     "webpack-cli": "^3"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/register": "^7.7.7",
     "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
     "copyfiles": "^2.1.0",
     "duckfactory": "^1.3.5",
     "eslint": "^6.1.0",
@@ -73,9 +72,8 @@
   },
   "babel": {
     "presets": [
-      "es2015",
-      "react",
-      "stage-0"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ]
   },
   "lint-staged": {
