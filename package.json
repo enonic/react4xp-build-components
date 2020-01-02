@@ -34,6 +34,10 @@
     "stats-webpack-plugin": "^0.7.0"
   },
   "peerDependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7",
+    "@babel/plugin-transform-arrow-functions": "^7",
+    "@babel/preset-env": "^7",
+    "@babel/preset-react": "^7",
     "react4xp-buildconstants": "^0.8.0",
     "react": "*",
     "react-dom": "*",
