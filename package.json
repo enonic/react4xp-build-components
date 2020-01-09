@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/enonic/react4xp-build-components",
   "dependencies": {
+    "@babel/preset-typescript": "^7.7.7",
     "react4xp-build-entriesandchunks": "^0.4.0",
     "stats-webpack-plugin": "^0.7.0"
   },

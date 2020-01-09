@@ -5,6 +5,8 @@ const StatsPlugin = require("stats-webpack-plugin");
 const path = require("path");
 const fs = require("fs");
 
+const supportedFileExtensions = ["jsx", "tsx", "js", "ts", "es6", "es"];
+
 // Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X) into an array of unique,
 // verified, absolute-path'd and OS-compliant folder names. Halts on errors, displays warnings, skips items that are not found.
 const normalizeDirList = (
@@ -238,7 +240,7 @@ module.exports = (env = {}) => {
   // ------------------- Build the entry list:
 
   // Normalize and clean the entry extensions list:
-  const entryExtensions = (env.ENTRY_EXT || "jsx,tsx,js,ts,es6,es")
+  const entryExtensions = (env.ENTRY_EXT || supportedFileExtensions.join(","))
     .trim()
     .replace(/[´`'"]/g, "")
     .split(",")
@@ -250,7 +252,7 @@ module.exports = (env = {}) => {
   const entrySets = [
     {
       sourcePath: SRC_SITE,
-      sourceExtensions: ["jsx", "tsx"],
+      sourceExtensions: supportedFileExtensions,
       targetSubDir: "site"
     },
     {
@@ -260,7 +262,7 @@ module.exports = (env = {}) => {
         "react4xp-regions",
         "entries"
       ),
-      sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"]
+      sourceExtensions: supportedFileExtensions
     },
     ...entryDirs.map(entryDir => ({
       sourcePath: entryDir,
@@ -449,7 +451,7 @@ module.exports = (env = {}) => {
     },
 
     resolve: {
-      extensions: [".es6", ".js", ".jsx", ".tsx"]
+      extensions: supportedFileExtensions
     },
 
     devtool: DEVMODE ? "source-map" : false,
@@ -458,12 +460,16 @@ module.exports = (env = {}) => {
       rules: [
         {
           // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/react4xp-regions
-          test: /\.((tsx?)|(jsx?)|(es6))$/,
+          test: /\.((tsx?)|(jsx?)|(es6?))$/,
           exclude: /(?=.*[\\/]node_modules[\\/](?!react4xp-regions))^(\w+)$/,
           loader: "babel-loader",
           query: {
             compact: !DEVMODE,
-            presets: ["@babel/preset-react", "@babel/preset-env"],
+            presets: [
+              "@babel/preset-react",
+              "@babel/preset-env",
+              "@babel/preset-typescript"
+            ],
             plugins: [
               "@babel/plugin-transform-arrow-functions",
               "@babel/plugin-proposal-object-rest-spread"
