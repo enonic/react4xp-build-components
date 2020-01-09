@@ -5,7 +5,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { actionCreators as testAC } from "../../redux/reducers/greetingsRed";
+import { actionCreators as testAC } from "../../redux/reducers/greetings-red";
 
 const ReduxWorldGreeter = ({
   id,
@@ -56,7 +56,4 @@ const mapDispatchToProps = {
 
 // ----------------------------------------------  Export
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ReduxWorldGreeter);
+export default connect(mapStateToProps, mapDispatchToProps)(ReduxWorldGreeter);
