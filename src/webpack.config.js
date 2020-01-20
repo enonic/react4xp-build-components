@@ -5,8 +5,9 @@ const StatsPlugin = require("stats-webpack-plugin");
 const path = require("path");
 const fs = require("fs");
 
-// Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X) into an array of unique,
-// verified, absolute-path'd and OS-compliant folder names. Halts on errors, displays warnings, skips items that are not found.
+// Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X, usually .../resources/react4xp/)
+// into an array of unique, verified, absolute-path'd and OS-compliant folder names.
+// Halts on errors, displays warnings, skips items that are not found.
 const normalizeDirList = (
   commaSepDirList,
   singularLabel,
@@ -168,6 +169,51 @@ module.exports = (env = {}) => {
     symlinksUnderReact4xpRoot,
     VERBOSE
   );
+
+  if (VERBOSE) {
+    console.log(
+      `\n\n---\nenv.CHUNK_DIRS (${
+        Array.isArray(env.CHUNK_DIRS)
+          ? `array[${env.CHUNK_DIRS.length}]`
+          : typeof env.CHUNK_DIRS +
+            (env.CHUNK_DIRS && typeof env.CHUNK_DIRS === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(env.CHUNK_DIRS))}`
+              : "")
+      }): ${JSON.stringify(env.CHUNK_DIRS, null, 2)}`
+    );
+    console.log(
+      `--> chunkDirs (${
+        Array.isArray(chunkDirs)
+          ? `array[${chunkDirs.length}]`
+          : typeof chunkDirs +
+            (chunkDirs && typeof chunkDirs === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(chunkDirs))}`
+              : "")
+      }): ${JSON.stringify(chunkDirs, null, 2)}`
+    );
+
+    console.log(
+      `\n\n---\nenv.ENTRY_DIRS (${
+        Array.isArray(env.ENTRY_DIRS)
+          ? `array[${env.ENTRY_DIRS.length}]`
+          : typeof env.ENTRY_DIRS +
+            (env.ENTRY_DIRS && typeof env.ENTRY_DIRS === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(env.ENTRY_DIRS))}`
+              : "")
+      }): ${JSON.stringify(env.ENTRY_DIRS, null, 2)}`
+    );
+    console.log(
+      `--> chunkDirs (${
+        Array.isArray(entryDirs)
+          ? `array[${entryDirs.length}]`
+          : typeof entryDirs +
+            (entryDirs && typeof entryDirs === "object"
+              ? ` with keys: ${JSON.stringify(Object.keys(entryDirs))}`
+              : "")
+      }): ${JSON.stringify(entryDirs, null, 2)}`
+    );
+    console.log("\n---\n");
+  }
 
   // -----------------------------------------------------------  Catching some likely troublemakers:
 
