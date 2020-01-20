@@ -1,6 +1,6 @@
 {
   "name": "react4xp-build-components",
-  "version": "0.7.0",
+  "version": "0.7.1-SNAPSHOT",
   "description": "React4xp helper: basic webpack compilation of user-added React components in a React4xp structure",
   "main": "webpack.config.js",
   "files": [
@@ -38,7 +38,6 @@
     "@babel/plugin-transform-arrow-functions": "^7",
     "@babel/preset-env": "^7",
     "@babel/preset-react": "^7",
-    "react4xp-buildconstants": "^0.8.0",
     "react": "*",
     "react-dom": "*",
     "webpack": "^4",
@@ -69,8 +68,8 @@
     "prettier": "^1.18.2",
     "react": "^16.8.4",
     "react-redux": "^6.0.1",
-    "react4xp-buildconstants": "^0.8.0",
-    "react4xp-regions": "^0.2.0",
+    "react4xp-buildconstants": "0.8.0",
+    "react4xp-regions": "0.2.0",
     "redux": "^4.0.1",
     "rimraf": "^2.0.0",
     "webpack": "^4.29.6",
