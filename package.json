@@ -67,7 +67,7 @@
     "lint-staged": "^8.1.7",
     "prettier": "^1.18.2",
     "react": "^16.8.4",
-    "react-redux": "^6.0.1",
+    "react-redux": "^7.2.2",
     "react4xp-buildconstants": "0.8.0",
     "react4xp-regions": "0.2.1",
     "redux": "^4.0.1",
