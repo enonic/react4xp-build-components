@@ -69,7 +69,7 @@
     "react": "^16.8.4",
     "react-redux": "^6.0.1",
     "react4xp-buildconstants": "0.8.0",
-    "react4xp-regions": "0.2.1",
+    "react4xp-regions": "1.0.6",
     "redux": "^4.0.1",
     "rimraf": "^2.0.0",
     "webpack": "^4.29.6",
